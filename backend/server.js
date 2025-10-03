@@ -1,41 +1,43 @@
+import express from 'express';
+import cors from 'cors';
 import 'dotenv/config';
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY
-});
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-async function main() {
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// Use a relative route
+app.post('/api/generate', async (req, res) => {
+  const { topic } = req.body;
+  if (!topic) return res.status(400).json({ error: "Topic is required" });
+  console.log("Received topic:", topic);
   const prompt = `
-  Write 5 multiple choice questions on web development. 
-  Return the output strictly in JSON format as an array of objects like this:
-  [
-    {
-      "question": "string",
-      "options": ["string","string","string","string"],
-      "answer": "string"
-    }
-  ]
+    Write 5 multiple choice questions on "${topic}". 
+    Return output strictly in JSON format as array of objects:
+    [
+      { "question": "string", "options": ["string","string","string","string"], "answer": "string" }
+    ]
   `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
-
-  let raw = response.text.trim();
-
-  // Remove Markdown ```json ... ``` wrappers if present
-  raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
-
   try {
-    const data = JSON.parse(raw);
-    console.log(JSON.stringify(data, null, 2));
-  } catch (e) {
-    console.error("Still not valid JSON. Raw output was:\n", raw);
-  }
-}
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt
+    });
 
-main().catch(err => {
-  console.error("Error from Gemini:", err);
+    let raw = response.text.trim();
+    raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+    const data = JSON.parse(raw);
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate questions" });
+  }
 });
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

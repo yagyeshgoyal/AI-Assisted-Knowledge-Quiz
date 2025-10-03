@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios';
 
 const Home = () => {
   const [topic, setTopic] = useState('')             // for input field
@@ -8,11 +9,16 @@ const Home = () => {
     setTopic(e.target.value)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     if (topic.trim() !== '') {
       console.log("Submitted:", topic)   // log value
       setSubmittedTopic(topic)           // store value
-      setTopic('')                       // clear input box
+      setTopic('')               
+      console.log(submittedTopic)        // clear input box
+      const response = await axios.post('http://localhost:5000/api/generate', {
+        topic: submittedTopic
+      });
+
     }
   }
 
