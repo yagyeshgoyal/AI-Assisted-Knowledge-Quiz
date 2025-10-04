@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CompletionMessage = ({ score, totalQuestions }) => {
+const CompletionMessage = ({ score, totalQuestions, onViewFeedback }) => {
   const percentage = score / totalQuestions;
   
   const getMessage = () => {
@@ -17,9 +17,15 @@ const CompletionMessage = ({ score, totalQuestions }) => {
       <p className="text-2xl sm:text-3xl font-bold text-green-600">
         {score}/{totalQuestions}
       </p>
-      <p className="text-sm sm:text-base text-gray-600 mt-2">
+      <p className="text-sm sm:text-base text-gray-600 mt-2 mb-4">
         {getMessage()}
       </p>
+      <button
+        onClick={onViewFeedback}
+        className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
+      >
+        Get AI Feedback
+      </button>
     </div>
   );
 };
