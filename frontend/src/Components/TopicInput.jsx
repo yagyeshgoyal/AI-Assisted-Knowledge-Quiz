@@ -5,7 +5,7 @@ const TopicInput = ({ topic, setTopic, onGenerate, isLoading }) => {
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
       <input
         type="text"
-        placeholder="Enter a topic (e.g., 'React Hooks' or 'World War II')"
+        placeholder="Enter a topic"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && !isLoading && onGenerate()}
